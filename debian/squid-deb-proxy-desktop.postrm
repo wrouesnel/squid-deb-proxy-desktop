@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+# remove 
+rm -f /etc/avahi/services/squid-deb-proxy-desktop.service
+
+#DEBHELPER#
+
+exit 0

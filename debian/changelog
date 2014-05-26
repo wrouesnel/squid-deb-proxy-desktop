@@ -1,0 +1,417 @@
+squid-deb-proxy-desktop (0.8.8) UNRELEASED; urgency=medium
+
+  * Fork to the new name: squid-deb-proxy-desktop
+  This implementation removes the onerous security restrictions of the package
+  in favor of a version more suited to use by developers and users on desktops
+  where the desire would be to share packages among several squid-instances on
+  the local network.
+
+ -- Will Rouesnel <w.rouesnel@gmail.com>  Mon, 26 May 2014 10:11:56 +1000
+
+squid-deb-proxy (0.8.7) unstable; urgency=low
+
+  * debian/po/es.po:
+    - updated debconf translation, thanks to Camaleón
+      (closes: #739510)
+  * init-common.sh:
+    - fix squid-deb-proxy restart bug that caused the proxy to disappear
+      from the announced avahi services (closes: 728791)
+
+ -- Michael Vogt <mvo@debian.org>  Sat, 15 Mar 2014 16:39:26 +0100
+
+squid-deb-proxy (0.8.6) unstable; urgency=low
+
+  [ Michael Vogt ]
+  * ensure /etc/avahi/services/squid-deb-proxy.service is removed
+    on package removal
+  * debian/po/es.po:
+    - New Spanish debconf translation, thanks to Camaleón 
+      (closes: #733495)
+  
+  [ Chris Glass ]
+  * lp:~tribaal/squid-deb-proxy/extra-default-networks:
+    - add two more example repos
+
+ -- Michael Vogt <mvo@debian.org>  Sat, 25 Jan 2014 22:27:08 +0100
+
+squid-deb-proxy (0.8.5) unstable; urgency=low
+
+  [ James Page ]
+  * lp:~james-page/squid-deb-proxy/fixup-cache-init:
+    Ensure squid does not daemonize when creating cache directories
+    (LP: #1247886)
+
+ -- Michael Vogt <mvo@debian.org>  Thu, 12 Dec 2013 22:22:34 +0100
+
+squid-deb-proxy (0.8.4) unstable; urgency=low
+
+  * mirror-dstdomain.acl.Debian:
+    - add http.debian.net to the allowed destinations (closes: #724229)
+
+ -- Michael Vogt <mvo@debian.org>  Mon, 23 Sep 2013 10:39:35 +0200
+
+squid-deb-proxy (0.8.3) unstable; urgency=low
+
+  * debian/squid-deb-proxy.postinst:
+    - use "reload" instead of "restart" to avoid confusing error message
+      that squid-deb-proxy did not start (when it did) on fresh installs
+      or dpkg-reconfigure
+  * mirror-dstdomain.acl.Debian:
+    - add cdn.debian.net to the default allowed destinations
+  * apt-avahi-discover:
+    - improve --debug output
+  * debian/squid-deb-proxy.init:
+    - ensure that reload re-generates the ACL configuration
+
+ -- Michael Vogt <mvo@debian.org>  Fri, 20 Sep 2013 16:14:53 +0200
+
+squid-deb-proxy (0.8.2) unstable; urgency=low
+
+  * apt-avahi-discover:
+    - do not depend on python-apt and use /usr/bin/apt-config instead
+      to get the "APT::Avahi-Discover::Timeout" configuration value
+      (closes: #722932)
+
+ -- Michael Vogt <mvo@debian.org>  Thu, 19 Sep 2013 14:56:55 +0200
+
+squid-deb-proxy (0.8.1) unstable; urgency=low
+
+  [ Julian Andres Klode ]
+  * apt-avahi-discover:
+    - Fix a check for IPv6 addresses
+    - Really ignore non-accepting hosts (Closes: #722253)
+
+ -- Michael Vogt <mvo@debian.org>  Wed, 11 Sep 2013 18:23:46 +0200
+
+squid-deb-proxy (0.8) unstable; urgency=low
+
+  [ Andrew Simpson ]
+  * debian/squid-deb-proxy.init:
+    - fix incorrect functions in reload() (closes: #720365)
+  
+  [ Michael Vogt ]
+  * apt-avahi-discover:
+    - when a _apt_proxy._tcp server is found, try to connect to
+      it before using it
+    - when multiple _apt_proxy._tcp servers are found, use the one
+      that provides the quickest answer (closes: #722253, #718788)
+    Thanks to Paul Wise and Julian Andres Klode for the suggestions
+  
+  [ Julian Andres Klode ]
+  * apt-avahi-discover:
+    - Pass -f to avahi-browse to not produce error messages if it cannot 
+      find a service (closes: #722253)
+
+ -- Michael Vogt <mvo@debian.org>  Tue, 10 Sep 2013 16:15:53 +0200
+
+squid-deb-proxy (0.7.2) unstable; urgency=low
+
+  [ Chris J Arges ]
+  * Add additional ipv6 localhost address. (LP: #1195430) 
+
+ -- Michael Vogt <mvo@debian.org>  Tue, 09 Jul 2013 16:37:19 +0200
+
+squid-deb-proxy (0.7.1) unstable; urgency=low
+
+  * fix package description, thanks to  martin f krafft
+    (closes: #705813)
+  * merge reviewed package description and debconf templates, many
+    thanks to Christian PERRIER and Justin B Rye (closes: #705794)
+  * fix btfs, closes: #707507
+  * merge patch to use dpkg-vendor instead of lsb_release -i -s
+    thanks to  Felix Geyer (closes: #706521)
+  * debian/po/sk.po:
+    - add, thanks to helix84 (closes: #709109)
+  * debian/po/da.po:
+    - added, thanks to Joe Dalton (closes: #708854)
+  * debian/po/ru.po:
+    - added, thanks to Yuri Kozlov (closes: #708728)
+  * debian/po/de.po:
+    - added, thanks to Chris Leick (closes: #709630)
+  * debian/po/it.po:
+    - added, thanks to Beatrice Torracca (closes: #709881)
+  * debian/po/cs.po:
+    - added, thanks to Michal Šimůnek  (closes: #710114)
+  * debian/po/pl.po:
+    - added, thanks to Michał Kułach  (closes: #710389)
+  * debian/po/ja.po:
+    - added, thanks to "victory" (closes: #710436)
+  * debian/po/fr.po:
+    - added, thanks to "jean-pierre giraud" (closes: #711140)
+  * debian/po/sv.po:
+    - added, thanks to "Martin Bagge" (closes: #712652)
+  
+ -- Michael Vogt <mvo@debian.org>  Tue, 18 Jun 2013 13:33:41 +0200
+
+squid-deb-proxy (0.7) unstable; urgency=low
+
+  * add a debian default config
+  * enable sysv init script
+  * refactor shell helper code into init-common.sh
+  * initial debian upload (closes: #574081)
+
+ -- Michael Vogt <mvo@debian.org>  Tue, 09 Apr 2013 19:11:43 +0200
+
+squid-deb-proxy (0.6.8) raring; urgency=low
+
+  * apt-avahi-discover:
+    - skip ipv6 link-local addresses, thanks to Edwin Amsler
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 09 Apr 2013 18:50:45 +0200
+
+squid-deb-proxy (0.6.7) raring; urgency=low
+
+  * lp:~nobuto/squid-deb-proxy/allow-ubuntu-cloud-archive:
+    - allowing caching of the "Ubuntu Cloud Archive" repository by 
+      default
+  * allow caching of .extras.ubuntu.com
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 06 Dec 2012 11:47:25 +0100
+
+squid-deb-proxy (0.6.6) quantal; urgency=low
+
+  * remove the autogenerated blacklist file if it contains no data
+    (LP: #1053682)
+
+ -- Brian Murray <brian@ubuntu.com>  Thu, 20 Sep 2012 15:28:54 -0700
+
+squid-deb-proxy (0.6.5) quantal; urgency=low
+
+  [ Simon Déziel ]
+  * lp:~sdeziel/squid-deb-proxy/remove-unused-acls:
+    - remove all and localhost acls as they are buildin in squid3
+      (LP: #1005257)
+  
+  [ Michael Vogt ]
+  * debian/control:
+    - only depend on squid3
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Fri, 24 Aug 2012 17:17:18 +0200
+
+squid-deb-proxy (0.6.4) quantal; urgency=low
+
+  [ Andy Whitcroft ]
+  * squid-deb-proxy: advertise on IPv6 (LP: #1021298)
+   - add IPv6 stanza to avahi configuration
+   - add IPv6 link local addresses to default acls
+  * squid-dev-proxy-client: support IPv6 addressing when offered under avahi
+   - switch to python script to allow validation of the addresses against
+     the public address families we have on our interfaces (uses the same
+     algorithm used in apt to avoid "something wierd" errors)
+   - look for IPv6 then IPv4 addresses in avahi browse responses
+   - stop using the incoming interface specifier to imply address type
+     use address form itself
+   - format IPv6 addresses using the http://[address]:port/ form
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 09 Jul 2012 17:43:11 +0200
+
+squid-deb-proxy (0.6.3) precise-proposed; urgency=low
+
+  [ Simon Déziel ]
+  * Support squid and squid3 in logrotate config (LP: #984806)
+
+  [ Michael Vogt ]
+  * mirror-dstdomain.acl:
+    - fix typo, thanks to Paolo Rotolo (LP: #978696)
+  
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 19 Apr 2012 14:46:24 +0200
+
+squid-deb-proxy (0.6.2) precise; urgency=low
+
+  [ Michael Vogt ]
+  * squid-deb-proxy.conf:
+    - use "aufs" instead of "ufs" for the cache directory. Thanks
+      to Robert Colins for this suggestion
+
+  [ Robie Basak ]
+  * squid-deb-proxy.conf: always refresh Packages and Release files.
+    (LP: #952364)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 02 Apr 2012 22:09:12 +0200
+
+squid-deb-proxy (0.6.1) precise; urgency=low
+
+  [ Adam Gandelman ]
+  * debian/squid-deb-proxy.upstart: Wrap squid execution in a script section.
+    Also test for location/version of squid there, as the existing test in
+    pre-start is out of scope but needed in both places. (LP: #893313)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 24 Nov 2011 16:26:34 +0100
+
+squid-deb-proxy (0.6) precise; urgency=low
+
+  * add (optional) support for squid3
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 03 Nov 2011 10:44:06 -0400
+
+squid-deb-proxy (0.5.2) oneiric; urgency=low
+
+  * Rework/simplify/fix the udeb based on the input from 
+    Colin Watson (thanks a lot!)
+  * fix a bunch of lintian errors:
+    - add missing po-debconf as build-depends
+    - add debian/po/{POTFILES.in,templates.pot}
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 30 Jun 2011 12:09:19 +0100
+
+squid-deb-proxy (0.5.1) oneiric; urgency=low
+
+  * debian/control:
+    - fix architecture in squid-deb-proxy-client-udeb
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 28 Jun 2011 12:35:19 +0100
+
+squid-deb-proxy (0.5) oneiric; urgency=low
+
+  * merged lp:~lynxman/squid-deb-proxy/debhooks, many thanks
+    this adds debconf support to enable unrestricted network src
+    access and access to PPA destinations
+  * add support for a binary packagename blacklist
+  * add .d directories for:
+     - allowed-networks-src.acl.d
+     - mirror-dstdomain.acl.d
+     - pkg-blacklist.d
+  * add squid-deb-proxy-client udeb 
+  * write debconf generated config to 
+     /etc/squid-deb-proxy/allowed-networks-src.acl.d/30-debconf
+     /etc/squid-deb-proxy/mirror-dstdomain.acl.d/30-debconf
+  * debian/control:
+    - add avahi and pkg-config to the build-depends
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 09 Jun 2011 15:34:11 +0200
+
+squid-deb-proxy (0.4.2) natty; urgency=low
+
+  * mirror-dstdomain.acl:
+    - add mirrors.ubuntu.com for the mirror methods
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 24 Mar 2011 17:50:10 +0100
+
+squid-deb-proxy (0.4.1) natty; urgency=low
+
+  * remove obsolete conffile on upgrade:
+    /etc/init/squid-deb-proxy-avahi.conf
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 24 Mar 2011 08:51:41 +0100
+
+squid-deb-proxy (0.4) natty; urgency=low
+
+  * mirror-dstdomain.acl:
+    - add ddebs.ubuntu.com to default mirrors
+  * apt-avahi-discover:
+    - use avahi-resolve to workaround the issue that avahi-browse
+      sometimes hands out ipv6 even when asked for ipv4 only,
+      many thanks to Andrew Simpson (LP: #686265)
+  * contrib/squid-deb-proxy.init:
+    - add sysv init script, thanks to Andrew Simpson
+  * debian/squid-deb-proxy.upstart:
+    - write avahi services file on post-start and kill it again
+      on pre-stop (LP: #695937)
+  * debian/squid-deb-proxy.squid-deb-proxy-avahi.upstart:
+    - removed, this is part of squid-deb-proxy.upstart now
+  * Makefile:
+    - fix permission of 30autoproxy (LP: #697955)
+  * debian/squid-deb-proxy.logrotate:
+    - add logrotate file (LP: #718923), thanks to
+      Johan van Dijk and Andrew Simpson
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 23 Mar 2011 21:53:11 +0100
+
+squid-deb-proxy (0.3.4) natty; urgency=low
+
+  * Removing expect fork and passing -N to squid to prevent upstart
+    losing track of squid on reload (LP: #573853)
+
+ -- Clint Byrum <clint@ubuntu.com>  Tue, 11 Jan 2011 15:07:37 -0800
+
+squid-deb-proxy (0.3.3) natty; urgency=low
+
+  * Adjusting upstart job so restarting squid-deb-proxy does not result
+    in killing squid-deb-proxy-avahi. (LP: #677276)
+  * Also adjusting upstart job so squid-deb-proxy does not get started
+    a real network interface is up and all local filesystems are mounted 
+
+ -- Clint Byrum <clint@ubuntu.com>  Thu, 18 Nov 2010 16:27:24 -0800
+
+squid-deb-proxy (0.3.2) natty; urgency=low
+
+  [ Colin Dean ]
+  * adding other ubuntu/canonical repos and some suggested 
+    others (but commented) (LP: #673080)
+  * Added commented lines which allow non-specified domains to be 
+    accessed and (optionally) cached
+
+  [ Jorge O. Castro ]
+  * Add some popular repositories to cache (commented out)
+  
+  [ Michael Vogt ]
+  * README: 
+    - updated to document the new options
+  * debian/squid-deb-proxy.squid-deb-proxy-avahi.upstart:
+    - fix upstart script so that the avahi service actually gets
+      started (LP: #655187)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 10 Nov 2010 10:45:49 +0100
+
+squid-deb-proxy (0.3.1) lucid; urgency=low
+
+  * debian/squid-deb-proxy.squid-deb-proxy-avahi.upstart:
+    - start only once avahi-daemon is available (thanks to dholbach)
+  * debian/control:
+    - add dependency on apt for squid-deb-proxy-client
+  (thanks to dholbach)
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Thu, 18 Mar 2010 15:05:12 +0100
+
+squid-deb-proxy (0.3) lucid; urgency=low
+
+  * debian/squid-deb-proxy.squid-deb-proxy-avahi.upstart:
+    - advertise the proxy using avahi (if avahi is availalbe)
+  * debian/control:
+    - add recommends on avahi-utils to get avahi-publish
+  * apt-avahi-discover:
+    - provide a avahi based module suitable for apts 
+      Acquire::http::ProxyAutoDetect option
+  * 30autoproxy:
+    - add apt configuration that automatically uses apt-avahi-discover
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 17 Feb 2010 14:04:56 +0100
+
+squid-deb-proxy (0.2.3) lucid; urgency=low
+
+  * debian/control:
+    - move Vcs to lp:~squid-deb-proxy-developers/squid-deb-proxy/trunk
+    - add homepage
+  * mirror-dstdomain.acl:
+    - add ports.ubuntu.com
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Wed, 27 Jan 2010 15:02:15 +0100
+
+squid-deb-proxy (0.2.2) lucid; urgency=low
+
+  * mirror-dstdomain.acl:
+    - add security.ubuntu.com to the allowed destdomains
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Tue, 26 Jan 2010 09:19:50 +0100
+
+squid-deb-proxy (0.2.1) lucid; urgency=low
+
+  * initial lucid upload
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 25 Jan 2010 18:13:26 +0100
+
+squid-deb-proxy (0.2) lucid; urgency=low
+
+  * README:
+    - add documentation
+  * *.acl:
+    - split the bits that the user will most likely change into 
+      different files
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 25 Jan 2010 18:13:15 +0100
+
+squid-deb-proxy (0.1) lucid; urgency=low
+
+  * initial version
+
+ -- Michael Vogt <michael.vogt@ubuntu.com>  Mon, 18 Jan 2010 12:11:19 +0100

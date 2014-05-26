@@ -1,0 +1,16 @@
+# allowed-networks-src.conf
+# 
+# network sources that you want to allow access to the cache
+
+# private networks
+10.0.0.0/8 
+172.16.0.0/12
+192.168.0.0/16
+127.0.0.1
+
+# IPv6 private addresses
+fe80::/64
+::1/128
+
+# additional non-private networks can be added to the directory:
+#  /etc/squid-deb-proxy-desktop/allowed-networks-src.acl.d

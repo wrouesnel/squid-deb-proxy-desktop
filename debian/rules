@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+DIST=$(shell dpkg-vendor --query Vendor)
+
+%:
+	dh $@
+
+override_dh_auto_build:
+	dh_auto_build $@
+
+override_dh_installinit:
+	dh_installinit $@
+	dh_installinit --name=squid-deb-proxy-desktop-avahi

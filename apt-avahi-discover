@@ -1,0 +1,218 @@
+#!/usr/bin/python
+#
+# use avahi to find a _apt_proxy._tcp provider and return
+# a http proxy string suitable for apt
+
+import asyncore
+import functools
+import os
+import socket
+import sys
+import time
+import fcntl
+import struct
+from subprocess	import Popen, PIPE, call
+
+DEFAULT_CONNECT_TIMEOUT_SEC = 2
+
+def DEBUG(msg):
+    if "--debug" in sys.argv:
+        sys.stderr.write(msg + "\n")
+
+
+def get_avahi_discover_timeout():
+    APT_AVAHI_TIMEOUT_VAR = "APT::Avahi-Discover::Timeout"
+    p = Popen(
+        ["/usr/bin/apt-config", "shell", "TIMEOUT", APT_AVAHI_TIMEOUT_VAR], 
+        stdout=PIPE)
+    stdout, stderr = p.communicate()
+    if not stdout:
+        DEBUG(
+            "no timeout set, using default '%s'" % DEFAULT_CONNECT_TIMEOUT_SEC)
+        return DEFAULT_CONNECT_TIMEOUT_SEC
+    if not stdout.startswith("TIMEOUT="):
+        raise ValueError("got unexpected apt-config output: '%s'" % stdout)
+    varname, sep, value = stdout.strip().partition("=")
+    timeout = int(value.strip("'"))
+    DEBUG("using timeout: '%s'" % timeout)
+    return timeout
+
+@functools.total_ordering
+class AptAvahiClient(asyncore.dispatcher):
+    def __init__(self, addr):
+        asyncore.dispatcher.__init__(self)
+        if is_ipv6(addr[0]):
+            self.create_socket(socket.AF_INET6, socket.SOCK_STREAM)
+            self.connect( (addr[0], addr[1], 0, 0) )
+        else:
+            self.create_socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.connect(addr)
+        self._time_init = time.time()
+        self.time_to_connect = sys.maxint
+        self.address = addr
+    def handle_connect(self):
+        self.time_to_connect = time.time() - self._time_init
+        self.close()
+    def __eq__(self, other):
+        return self.time_to_connect == other.time_to_connect
+    def __lt__(self, other):
+        return self.time_to_connect < other.time_to_connect
+    def __repr__(self):
+        return "<%s> %s: %s" % (
+            self.__class__.__name__, self.addr, self.time_to_connect)
+
+
+def is_ipv6(a):
+    return ':' in a
+
+def is_linklocal(addr):
+    # Link-local should start with fe80 and six null bytes
+    return addr.startswith("fe80::")
+
+def get_local_addresses():
+    # return a list of local IP addresses for this machine
+    f = open('/proc/net/dev', 'r')
+    ifacelist = f.read().split('\n')
+    f.close()
+    
+    # remove 2 lines header
+    ifacelist.pop(0)
+    ifacelist.pop(0)
+
+    def getifip(ifn):
+        sck = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        return socket.inet_ntoa(fcntl.ioctl(sck.fileno(),
+            0x8915,struct.pack('256s', ifn[:15]))[20:24])
+
+    # loop to check each line
+    local_addresses = []
+    for line in ifacelist:
+        ifacedata = line.replace(' ','').split(':')
+        #print ifacedata
+        # check the data have 2 elements
+        if len(ifacedata) == 2:
+            # check the interface is up (Transmit/Receive data)
+            if int(ifacedata[1]) > 0:
+                # append as (name, ip)
+                local_addresses.append( (ifacedata[0], getifip(ifacedata[0])) )
+    
+    return local_addresses
+
+def update_squid_peers(addrs):
+    # overwrite the discovered peers file if we can. if the user uninstalled,
+    # updating the file should be harmless anyway.
+    try:
+        f = open('/etc/squid-deb-proxy-desktop/discovered-peers.conf', 'w')
+    except IOError:
+        DEBUG("squid deb proxy does not appear to be installed.")
+        return
+
+    f.write('# Automatically updated file. Your changes will be lost.\n')
+    f.write('# host | type | proxy port | icp port | options \n')
+    
+    # just output some cache_peer lines
+    for (ip, port) in addrs:
+        f.write('cache_peer %s sibling %i 0 default\n' % (ip, port))
+
+    f.close()
+    
+    # tell squid-deb-proxy to reload
+    nullf = open(os.devnull, 'w')
+    # note: invoking the shell script directly introduces a race-condition which
+    # breaks the asyncore invocations later. It *must* be wrapped in this sh
+    # invocation to work properly.
+    call(["/bin/sh", "-c", "/etc/init.d/squid-deb-proxy", "reload"], 
+        stdout=nullf)
+    DEBUG("updated squid deb proxy discovered-peers.conf successfully")
+
+def get_proxy_host_port_from_avahi():
+    service = '_apt_proxy._tcp'
+
+    # Obtain all of the services addresses from avahi, pulling the IPv6
+    # addresses to the top.
+    avahi_addrs = set()
+    p = Popen(['avahi-browse', '-kprtf', service], stdout=PIPE)
+    DEBUG("avahi-browse output:")
+    for line in p.stdout:
+        DEBUG(" '%s'" % line)
+        if line.startswith('='):
+            tokens = line.split(';')
+            addr = tokens[7]
+            port = int(tokens[8])
+            avahi_addrs.add((addr, port))
+
+    # Run through the offered addresses and see if we we have a bound local
+    # address for it.
+    addrs = []
+    squid_addrs = []    # addresses 
+
+    local_interfaces = get_local_addresses()
+    local_addresses = [ ip for (dev,ip) in local_interfaces ]
+    loopback_addrs = [ ip for (dev, ip) in local_interfaces if dev == 'lo' ]
+    ports = set()
+
+    for (ip, port) in avahi_addrs:
+        try:
+            res = socket.getaddrinfo(ip, port, 0, 0, 0, socket.AI_ADDRCONFIG)
+            if res:
+                # don't add local addresses to squid, since it's probably the
+                # same process.
+                if not ip in local_addresses:
+                    squid_addrs.append((ip, port))
+                else:
+                    # this is a local address. so there might be a loopback
+                    # address to use. store the port number.
+                    ports.add(port)
+                if is_ipv6(ip):
+                    # We need to skip ipv6 link-local addresses since APT
+                    # can't use them.
+                    if not is_linklocal(ip):
+                        addrs.append((ip, port))
+                else:
+                    addrs.append((ip, port))
+        except socket.gaierror:
+            pass
+
+    # if squid-deb-proxy is installed locally, update its list of cache peers.
+    update_squid_peers(squid_addrs)
+
+    # add all ports for all loopback addresses as candidates to check
+    for port in ports:
+        for lo_addr in loopback_addrs:
+            addrs.append((lo_addr, port))
+
+    if not addrs:
+        return None
+    
+    # sort by answering speed
+    hosts = []
+    for addr in addrs:
+        hosts.append(AptAvahiClient(addr))
+    # 2s timeout, arbitray
+    timeout = get_avahi_discover_timeout()
+    asyncore.loop(timeout=timeout)
+    DEBUG("sorted hosts: '%s'" % sorted(hosts))
+
+    # No host wanted to connect
+    if (all(h.time_to_connect == sys.maxint for h in hosts)):
+        return None
+
+    fastest_host = sorted(hosts)[0]
+    fastest_address = fastest_host.address
+    return fastest_address
+
+
+if __name__ == "__main__":
+    # Dump the approved address out in an appropriate format.
+    address = get_proxy_host_port_from_avahi()
+    if address:
+        (ip, port) = address
+        if is_ipv6(ip):
+            print "http://[%s]:%s/" % (ip, port)
+        else:
+            print "http://%s:%s/" % (ip, port)
+        sys.stderr.write("Found local proxy: http://%s:%s/\n" % (ip, port))
+    else:
+        sys.stderr.write("No local proxy. Using direct connection.\n")
+    sys.stderr.flush()
+    

@@ -1,0 +1,2 @@
+etc/squid-deb-proxy-desktop
+init-common.sh usr/share/squid-deb-proxy-desktop/

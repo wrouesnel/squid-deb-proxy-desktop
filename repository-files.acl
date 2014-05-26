@@ -1,0 +1,13 @@
+# List of Ubuntu repository files which should be cached/allowed
+\.deb$
+\.udeb$
+\.dsc$
+\.changes$
+\.tar\(\.?+\)$
+Release
+Release.gpg
+InRelease
+Sources
+Packages
+Translation
+

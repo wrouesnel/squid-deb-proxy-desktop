@@ -1,0 +1,141 @@
+#! /bin/sh
+#
+# squid-deb-proxy-desktop		Startup script for the SQUID Deb HTTP proxy-cache.
+#
+# Version:	@(#)squid-deb-proxy-desktop.rc  1.0  12-Mar-2011  andrew.simpson@corokia.co.nz
+#
+### BEGIN INIT INFO
+# Provides:          squid-deb-proxy-desktop
+# Required-Start:    $network $remote_fs $syslog
+# Required-Stop:     $network $remote_fs $syslog
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Squid Deb Package HTTP Proxy
+### END INIT INFO
+
+NAME=squid-deb-proxy-desktop
+DESC="Squid Deb HTTP Proxy Desktop Version"
+DAEMON=/usr/sbin/squid3
+PIDFILE=/var/run/$NAME.pid
+CONFIG=/etc/squid-deb-proxy-desktop/squid-deb-proxy-desktop.conf
+SQUID_ARGS="-YC -f $CONFIG"
+
+[ ! -f /etc/default/squid-deb-proxy-desktop ] || . /etc/default/squid-deb-proxy-desktop
+
+. /lib/lsb/init-functions
+
+# get the common stuff
+. /usr/share/squid-deb-proxy-desktop/init-common.sh
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+
+[ -x $DAEMON ] || exit 0
+
+ulimit -n 65535
+
+start () {
+        cache_dir=`find_cache_dir cache_dir`
+        pre_start
+
+	umask 027
+	ulimit -n 65535
+	cd $cache_dir
+	start-stop-daemon --quiet --start \
+		--pidfile $PIDFILE \
+		--exec $DAEMON -- $SQUID_ARGS < /dev/null
+	status=$?
+	if [ $status -eq 0 ]
+	then
+	        post_start
+	fi 
+	return $status
+}
+
+stop () {
+	PID=`cat $PIDFILE 2>/dev/null`
+	start-stop-daemon --stop --quiet \
+		--pidfile $PIDFILE \
+		--exec $DAEMON
+
+        # cleanup
+        post_stop
+
+	#
+	#	Now we have to wait until squid has _really_ stopped.
+	#
+	sleep 2
+	if test -n "$PID" && kill -0 $PID 2>/dev/null
+	then
+		log_action_begin_msg " Waiting"
+		cnt=0
+		while kill -0 $PID 2>/dev/null
+		do
+			cnt=`expr $cnt + 1`
+			if [ $cnt -gt 24 ]
+			then
+				log_action_end_msg 1
+				return 1
+			fi
+			sleep 5
+			log_action_cont_msg ""
+		done
+		log_action_end_msg 0
+		return 0
+	else
+		return 0
+	fi
+}
+
+case "$1" in
+	start)
+	log_daemon_msg "Starting $DESC" "$NAME"
+	if start ; then
+		log_end_msg $?
+	else
+		log_end_msg $?
+	fi
+	;;
+
+	stop)
+	log_daemon_msg "Stopping $DESC" "$NAME"
+	if stop ; then
+		log_end_msg $?
+	else
+		log_end_msg $?
+	fi
+	;;
+
+	reload|force-reload)
+	log_action_msg "Reloading $DESC configuration files"
+        # this will stop avahi
+        post_stop
+        # ensure that the auto-generated files are updated on reload
+        pre_start
+        # and reload
+	start-stop-daemon --stop --signal 1 --quiet \
+		--pidfile $PIDFILE --exec $DAEMON -- -f $CONFIG
+	log_action_end_msg 0
+        # this will start avahi again
+        post_start
+	;;
+
+	restart)
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	stop
+	if start ; then
+		log_end_msg $?
+	else
+		log_end_msg $?
+	fi
+	;;
+
+	*)
+	echo "Usage: /etc/init.d/$NAME {start|stop|reload|force-reload|restart}"
+	exit 3
+	;;
+esac
+
+exit 0
+

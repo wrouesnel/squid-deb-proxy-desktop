@@ -1,0 +1,49 @@
+Source: squid-deb-proxy-desktop
+Section: net
+Priority: extra
+Maintainer: Will Rouesnel <w.rouesnel@gmail.com>
+Build-Depends: debhelper (>= 7.0.50),
+               gettext,
+               intltool,
+               pkg-config,
+               po-debconf
+Standards-Version: 3.9.4
+Vcs-Git: https://github.com/wrouesnel/squid-deb-proxy-desktop
+Homepage: https://github.com/wrouesnel/squid-deb-proxy-desktop
+
+Package: squid-deb-proxy-desktop
+Architecture: all
+Depends: ${python:Depends},
+         ${misc:Depends},
+	 squid3
+Recommends: avahi-utils
+Description: Squid proxy configuration to optimize package downloads
+ This package contains a Squid proxy configuration to manage a cache of
+ .deb downloads, with optimizations for the types of file present in
+ package repositories, and using a dedicated directory and port.
+
+Package: squid-deb-proxy-desktop-client
+Architecture: all
+Depends: ${misc:Depends}, avahi-utils, apt (>= 0.7.25.3ubuntu1), python
+Description: automatic proxy discovery for APT based on Avahi
+ This package contains a helper for the APT http method to discover
+ proxies that publish their service as _apt_proxy._tcp.
+ .
+ It was written to be installed on clients that should use 
+ squid-deb-proxy-desktop automatically, but it will work with any proxy
+ that publishes the service as _apt_proxy._tcp.
+
+Package: squid-deb-proxy-desktop-client-udeb
+XC-Package-Type: udeb
+Section: debian-installer
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}, configured-network,
+Description: automatic proxy discovery for APT based on Avahi (udeb)
+ This package contains a helper for the APT http method to discover
+ proxies that publish their service as _apt_proxy._tcp.
+ .
+ It was written to be installed on clients that should use 
+ squid-deb-proxy-desktop automatically, but it will work with any proxy
+ that publishes the service as _apt_proxy._tcp.
+ .
+ This package contains the udeb for use with the Debian Installer.
