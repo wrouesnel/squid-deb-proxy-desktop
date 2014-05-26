@@ -25,9 +25,13 @@ Description: Squid proxy configuration to optimize package downloads
 Package: squid-deb-proxy-desktop-client
 Architecture: all
 Depends: ${misc:Depends}, avahi-utils, apt (>= 0.7.25.3ubuntu1), python
+Conflicts: squid-deb-proxy-client
 Description: automatic proxy discovery for APT based on Avahi
  This package contains a helper for the APT http method to discover
  proxies that publish their service as _apt_proxy._tcp.
+ .
+ This version will automatically search for and update the cache_peers of
+ a locally installed squid-deb-proxy-desktop server when run.
  .
  It was written to be installed on clients that should use 
  squid-deb-proxy-desktop automatically, but it will work with any proxy
