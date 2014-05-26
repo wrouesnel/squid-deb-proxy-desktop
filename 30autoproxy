@@ -1,1 +1,1 @@
-Acquire::http::ProxyAutoDetect "/usr/share/squid-deb-proxy-client/apt-avahi-discover";
+Acquire::http::ProxyAutoDetect "/usr/share/squid-deb-proxy-desktop-client/apt-avahi-discover";
