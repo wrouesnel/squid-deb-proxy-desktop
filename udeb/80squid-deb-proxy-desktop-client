@@ -5,5 +5,5 @@ log () {
         logger -t hw-detect "$@"
 }
 
-log "Queuing squid-deb-proxy-client"
-apt-install squid-deb-proxy-client
+log "Queuing squid-deb-proxy-desktop-client"
+apt-install squid-deb-proxy-desktop-client
