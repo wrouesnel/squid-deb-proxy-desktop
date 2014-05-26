@@ -121,7 +121,7 @@ def update_squid_peers(addrs):
     # note: invoking the shell script directly introduces a race-condition which
     # breaks the asyncore invocations later. It *must* be wrapped in this sh
     # invocation to work properly.
-    call(["/bin/sh", "-c", "/etc/init.d/squid-deb-proxy", "reload"], 
+    call(["/bin/sh", "-c", "/etc/init.d/squid-deb-proxy-desktop", "reload"], 
         stdout=nullf)
     DEBUG("updated squid deb proxy discovered-peers.conf successfully")
 
