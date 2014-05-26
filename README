@@ -5,7 +5,7 @@ A modified version of squid-deb-proxy more suited for desktop and developer use.
 
 A PPA of this package is available at https://launchpad.net/~w-rouesnel/+archive/squid-deb-proxy-desktop
 
-This package is oriented towards user flexiblity: it will cache any deb-looking files which are requested of it from any source - there are no ACLs restricting it by default, but as a compromise it will not allow nor parse normal html content (squid-deb-proxy will provided it comes/goes to various URLs).
+This package is oriented towards user flexiblity: it will cache any deb-looking files which are requested of it from any source - there are no ACLs restricting it by default, but it will not allow nor parse normal html content (squid-deb-proxy will provided it comes/goes to various URLs).
 
 The squid-deb-proxy-desktop-client package has also been modified to be aware of squid-deb-proxy running on the local machine - during invocation it will poll the network for other squid-deb-proxy instances (in fact anything that broadcasts as _apt_proxy._tcp. over avahi) and set them as cache_peers for a local squid instance.
 
