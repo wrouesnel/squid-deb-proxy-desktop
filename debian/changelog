@@ -1,4 +1,16 @@
-squid-deb-proxy-desktop (0.8.8) UNRELEASED; urgency=medium
+squid-deb-proxy-desktop (0.8.11) trusty; urgency=medium
+
+  * Hopefully the last fixes.
+
+ -- Will Rouesnel <w.rouesnel@gmail.com>  Tue, 27 May 2014 08:38:25 +1000
+
+squid-deb-proxy-desktop (0.8.9) trusty; urgency=medium
+
+  * Fix miscellaneous (but breaking) packaging issues.
+
+ -- Will Rouesnel <w.rouesnel@gmail.com>  Tue, 27 May 2014 08:21:13 +1000
+
+squid-deb-proxy-desktop (0.8.8) trusty; urgency=medium
 
   * Fork to the new name: squid-deb-proxy-desktop
   This implementation removes the onerous security restrictions of the package
