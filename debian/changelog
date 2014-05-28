@@ -1,3 +1,10 @@
+squid-deb-proxy-desktop (0.8.12) trusty; urgency=medium
+
+  * Add an if-up.d reload script, since IP changes throw squid into a
+  weird zombie state.
+
+ -- Will Rouesnel <w.rouesnel@gmail.com>  Wed, 28 May 2014 13:14:45 +1000
+
 squid-deb-proxy-desktop (0.8.11) trusty; urgency=medium
 
   * Hopefully the last fixes.

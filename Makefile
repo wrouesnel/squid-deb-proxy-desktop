@@ -13,6 +13,7 @@ install:
 	install -m 644 allowed-networks-src.acl $(DESTDIR)/etc/squid-deb-proxy-desktop/
 	install -m 644 discovered-peers.conf $(DESTDIR)/etc/squid-deb-proxy-desktop/
 	install -m 644 repository-files.acl $(DESTDIR)/etc/squid-deb-proxy-desktop/
+	install -m 755 squid-deb-proxy-desktop $(DESTDIR)/etc/network/if-up.d/
 	# client
 	install -m 755 apt-avahi-discover $(DESTDIR)/usr/share/squid-deb-proxy-desktop-client/
 	install -m 644 30autoproxy $(DESTDIR)/etc/apt/apt.conf.d

@@ -1,0 +1,4 @@
+#!/bin/sh
+# Reload squid-deb-proxy-desktop when the local network configuration changes.
+
+/etc/init.d/squid-deb-proxy-desktop restart
