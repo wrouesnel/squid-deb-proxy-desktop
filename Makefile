@@ -8,6 +8,7 @@ install:
 	install -d -m 755 $(DESTDIR)/etc/squid-deb-proxy-desktop
 	install -d -m 755 $(DESTDIR)/etc/apt/apt.conf.d
 	install -d -m 755 $(DESTDIR)/usr/share/squid-deb-proxy-desktop-client/
+	install -d -m 755 $(DESTDIR)/etc/network/if-up.d/
 	# files
 	install -m 644 squid-deb-proxy-desktop.conf $(DESTDIR)/etc/squid-deb-proxy-desktop/
 	install -m 644 allowed-networks-src.acl $(DESTDIR)/etc/squid-deb-proxy-desktop/
