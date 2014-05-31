@@ -1,3 +1,9 @@
+squid-deb-proxy-desktop (0.8.14) trusty; urgency=medium
+
+  * Fix Makefile for if-up.d installation.
+
+ -- Will Rouesnel <w.rouesnel@gmail.com>  Sat, 31 May 2014 10:00:58 +1000
+
 squid-deb-proxy-desktop (0.8.12) trusty; urgency=medium
 
   * Add an if-up.d reload script, since IP changes throw squid into a
