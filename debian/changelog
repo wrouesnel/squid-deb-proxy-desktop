@@ -1,3 +1,10 @@
+squid-deb-proxy-desktop (0.8.15) trusty; urgency=medium
+
+  * Add additional standard ACLs (diff, ddeb).
+  * Add a second cache peer file for manually configured proxies.
+
+ -- Will Rouesnel <w.rouesnel@gmail.com>  Mon, 09 Mar 2015 10:01:00 +1100
+
 squid-deb-proxy-desktop (0.8.14) trusty; urgency=medium
 
   * Fix Makefile for if-up.d installation.
